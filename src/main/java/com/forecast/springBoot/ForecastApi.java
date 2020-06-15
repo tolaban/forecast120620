@@ -56,17 +56,32 @@ public class ForecastApi {
 	public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
 		return args -> {
 			
+			Object obj = null;
+			String paramForCmdLineLatitude=null;
+			String paramForCmdLineLongitude=null;
+			
+			System.out.println(args.length+" outside");
+			
+			for (int i = 0; i < args.length; i++) {
+				if(args[i].contains("latitude")) {
+					paramForCmdLineLatitude=args[i].split(",")[0];
+					paramForCmdLineLongitude=args[i].split(",")[1];
+				}
+			}
+			
+			
 			//Quote quote = restTemplate.getForObject("https://api.weather.gov/points/39.7456,-97.0892", Quote.class);
 		
 			System.out.println("Latitude:-"+latitude);
 			System.out.println("Longitude:-"+longitude);
 			
-			Object obj = new JSONParser().parse(restTemplate.getForObject("https://api.weather.gov/points/39.7456,-97.0892", String.class));
+			if(paramForCmdLineLatitude!=null)
+				obj = new JSONParser().parse(restTemplate.getForObject("https://api.weather.gov/points/"+paramForCmdLineLatitude+","+paramForCmdLineLongitude, String.class));
+			else
+				obj = new JSONParser().parse(restTemplate.getForObject("https://api.weather.gov/points/"+latitude+","+longitude, String.class));
+			
 			JSONObject jo = (JSONObject) obj; 
 			
-			//Quote quote = restTemplate.getForObject(
-				//	"https://gturnquist-quoters.cfapps.io/api/random", Quote.class);
-			//System.out.println(jo.get("properties"));
 			
 			//Getting the Forecast API details
 			 Map address = ((Map)jo.get("properties")); 
