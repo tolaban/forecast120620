@@ -4,6 +4,7 @@ package com.forecast.springBoot;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -39,11 +40,6 @@ public class ForecastApi {
 	
 	
 	public static void main(String args[]){ 
-		
-		//System.out.println(FrescoApi.appTitle);
-		
-		
-		
 		SpringApplication.run(ForecastApi.class,args);
 	} 
 	
@@ -85,22 +81,17 @@ public class ForecastApi {
 			
 			//Getting the Forecast API details
 			 Map address = ((Map)jo.get("properties")); 
-			Iterator<Map.Entry> itr1 = address.entrySet().iterator(); 
+			Iterator<Map.Entry> itr1 = address.entrySet().iterator();
+        	StringBuilder strbuilder 
+            = new StringBuilder(); 
+			
 	        while (itr1.hasNext()) { 
 	            Map.Entry pair = itr1.next(); 
 	            if(pair.getKey().equals("forecast")) {
-	          //  	System.out.println(pair.getKey() + " : " + pair.getValue()); 
 	            	Object obj1 = new JSONParser().parse(restTemplate.getForObject(pair.getValue().toString(), String.class));
 	            	JSONObject jo1 = (JSONObject) obj1;
-	            	//System.out.println("------------------1");
-	            	//System.out.println(jo1);
 	            	Map periods = ((Map)jo1.get("properties"));
-	            	//System.out.println("------------------");
-	            	//System.out.println(periods.get("periods"));
 	            	JSONArray dailyTempArr = (JSONArray)periods.get("periods");
-//	            	System.out.println(dailyTempArr);
-	            	StringBuilder strbuilder 
-	                = new StringBuilder(); 
 	            	
 	            	strbuilder.append("--------------Five Day Temperature-----------------------");strbuilder.append("\n");
 	            	strbuilder.append("S.No|  Name          |     Start Time           |     End Time                |  Temp  | Details ");strbuilder.append("\n");
@@ -116,24 +107,42 @@ public class ForecastApi {
 		    	            		dailyTempObj.get("endTime")+"  |"+dailyTempObj.get("temperature")+"       |  "+dailyTempObj.get("detailedForecast"));	
 	            		}
 	            		strbuilder.append("\n");
-	            		
-	            		
 					}
-	            	//System.out.println(strbuilder);
-	            	File file = new File("output.txt");
-	            	BufferedWriter writer = null;
-	            	try {
-	            	    writer = new BufferedWriter(new FileWriter(file));
-	            	    writer.write(strbuilder.toString());
-	            	} finally {
-	            	    if (writer != null) writer.close();
-	            	}
-	            	
 	            }
 	            	
 	            }
+	        
+	        
+	        writeToFile(strbuilder.toString());
 			
 		};
 	}
+	
+	
+	private void writeToFile(String wholeStr) {
+
+    	File file = new File("output.txt");
+    	BufferedWriter writer = null;
+    	try {
+    	    try {
+				writer = new BufferedWriter(new FileWriter(file));
+				writer.write(wholeStr);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	    
+    	} finally {
+    	    if (writer != null)
+				try {
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    	}
+		
+	}
+	
 	
 }
