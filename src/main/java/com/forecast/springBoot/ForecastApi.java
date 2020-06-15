@@ -136,15 +136,4 @@ public class ForecastApi {
 		};
 	}
 	
-	private String getProperDate(String inputdate) {
-		
-		
-		DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'-''Z'", Locale.ENGLISH);
-		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyy", Locale.ENGLISH);
-		LocalDate date = LocalDate.parse(inputdate, inputFormatter);
-		String formattedDate = outputFormatter.format(date);
-		System.out.println(formattedDate);
-		return formattedDate;
-	}
-	
 }
